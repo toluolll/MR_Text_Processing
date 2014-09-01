@@ -40,7 +40,7 @@ def main(debug=0, separator="_____@@@@@_____"):
         text = ""
         for l in cat.stdout:
             text += l
-	text = os.linesep.join([s for s in text.splitlines() if s])
+#	text = os.linesep.join([s for s in text.splitlines() if s])
 
         if debug == 1:
             print "First 50 characters of the text"

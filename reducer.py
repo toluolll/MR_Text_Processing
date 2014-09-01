@@ -5,8 +5,6 @@ import sys
 import time
 
 def main(debug=0, separator="_____@@@@@_____"):
-    currentArticle = None
-
     for line in sys.stdin:
         line = line.strip()
 
@@ -39,21 +37,14 @@ def main(debug=0, separator="_____@@@@@_____"):
         # we can be sure that all pairs with the same key will
         # sent sequentially. When we detect a different one, we
         # won't see that word again.
-        if currentArticle != article_path:
-            if currentArticle is not None:
-                print('%s%s%s%s%s%s%s' % (
-                    currentArticle, 
+        print('%s%s%s%s%s%s%s' % (
+                    article_path, 
                     separator, 
                     sentence, 
                     separator, 
                     "concepts", 
                     separator, 
                     "relations"))
-            currencurrentArticle = article_path
-
-    # Output last word group if needed
-    if currentCount > 0:
-        print('%s\t%d' % (currentWord, currentCount))
 
 if __name__ == "__main__":
     main(debug=1)
