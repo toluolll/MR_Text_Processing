@@ -3,6 +3,50 @@
 from operator import itemgetter
 import sys
 import time
+from _chrefliterals import WordsDict, findLiterals, TextTag, TextTagList, normLiteral
+
+ABBR_MAX = 4
+DictWords = WordsDict('/usr/share/dict/words', ABBR_MAX)
+DictWords.insert('I')
+DictWords.insert('a')
+
+knownNotLiterals = dict.fromkeys((
+    'i.e.', 'ie.',
+    'c.f.', 'cf.', 'cf',
+    'e.g.', 'eg.',
+    'de', 'De'  # for de in the names of Universities
+))
+stopwords = []
+
+def get_terms_from_string(sentence, literals=None):
+    """
+    Extract terms from a given string of text
+    :param literals: pre-defined list of literals to search in text
+    """
+
+    tag_list = TextTagList()
+    start = 0
+    split_re = re.compile('\w+|\W', flags=re.U)
+    non_word = re.compile('^\W$', flags=re.U)
+
+    for tag in split_re.findall(sentence):
+        if tag:
+            if non_word.match(tag):
+                tag_type = TextTag.Type.CHARACTER
+            else:
+                tag_type = TextTag.Type.WORD
+
+            tag_list.append(TextTag(tag_type, start, start + len(tag), unicode(tag).encode('utf-8')))
+            start += len(tag)
+    literalTags = findLiterals(tag_list, literals, knownNotLiterals,
+                               DictWords, stopwords, 0, False)
+    return literalTags
+
+def norm_literal(literal):
+    """Return normalized literal form"""
+    literal = str(literal.encode('utf-8', 'ignore'))
+    n_literal = normLiteral(literal, DictWords, stopwords, False)
+    return n_literal.decode('utf-8', 'ignore')
 
 def main(debug=0, separator="_____@@@@@_____"):
     for line in sys.stdin:
@@ -33,10 +77,11 @@ def main(debug=0, separator="_____@@@@@_____"):
         except ValueError:
             continue
 
-        # Hadoop passes pairs ordered by key (first value), so
-        # we can be sure that all pairs with the same key will
-        # sent sequentially. When we detect a different one, we
-        # won't see that word again.
+        # TODO: extract concepts
+        tag_list = get_terms_from_string(article.article_text, temp_literals)
+        tag_tuple_list = [(l.value, l.start, l.end) for l in tag_list]
+
+        # TODO: extract relations
         print('%s%s%s%s%s%s%s' % (
                     article_path, 
                     separator, 
