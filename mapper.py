@@ -31,7 +31,7 @@ def preprocessText(text):
 
     return " ".join(content_without_brackets).decode("utf-8", "replace")
 
-def main(debug=0, separator="\t@@@@@\t"):
+def main(debug=0, separator="_____@@@@@_____"):
     for line in sys.stdin:
         line = line.strip() # Remove whitespace from beginning and end
         cat = subprocess.Popen(["hadoop", "fs", "-cat", line], stdout=subprocess.PIPE)
