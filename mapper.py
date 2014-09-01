@@ -11,6 +11,8 @@ def detect_sentences(text):
         if c == "." or c == "!" or c == "?":
             if text[i + 1:i + 2] == ' ' or text[i + 1:i + 2] == '\n':
                 dot_list.append(i)
+	if c == '\n' and not (text[i + 1:i + 2] == ' ' or text[i + 1:i + 2] == '\n'):
+	    dot_list.append(i)
     return dot_list
 
 def preprocessText(text):
@@ -41,7 +43,7 @@ def main(debug=0, separator="\t@@@@@\t"):
 
         if debug == 1:
             print "First 50 characters of the text"
-            print text
+            print text[0:50]
 
         tag_tuple_list = []
         dot_list = detect_sentences(text)
@@ -60,7 +62,7 @@ def main(debug=0, separator="\t@@@@@\t"):
             print num_elems
 
         i = -1
-        while i < num_elems:
+        while i < 3:
             k = i + 1
             if k < num_elems:
                 index = 0 if i < 0 else sorted_tag_list[i][2] + 1
@@ -90,4 +92,4 @@ def main(debug=0, separator="\t@@@@@\t"):
             i += 1
 
 if __name__ == "__main__":
-    main(debug=1)
+    main(debug=0)
