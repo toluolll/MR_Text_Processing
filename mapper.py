@@ -36,8 +36,8 @@ def main(debug=0, separator="\t@@@@@\t"):
         line = line.strip() # Remove whitespace from beginning and end
         cat = subprocess.Popen(["hadoop", "fs", "-cat", line], stdout=subprocess.PIPE)
         text = ""
-        for line in cat.stdout:
-            text += line
+        for l in cat.stdout:
+            text += l
 
         if debug == 1:
             print "First 50 characters of the text"
