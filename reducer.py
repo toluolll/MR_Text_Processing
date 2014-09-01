@@ -2,6 +2,7 @@
 
 from operator import itemgetter
 import sys
+import time
 
 def main(debug=0, separator="_____@@@@@_____"):
     currentArticle = None
@@ -17,13 +18,14 @@ def main(debug=0, separator="_____@@@@@_____"):
         article_path, positions, sentence, parse_tree = line.split(separator)
 
         if debug == 1:
-            print articles_path
+            print article_path
             print "Positions"
             print positions
             print "Sentence"
             print sentence
             print "Parse_tree"
             print parse_tree
+	    time.sleep(5)
 
         # Convert count to an integer
         try:

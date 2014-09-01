@@ -40,6 +40,7 @@ def main(debug=0, separator="_____@@@@@_____"):
         text = ""
         for l in cat.stdout:
             text += l
+	text = os.linesep.join([s for s in text.splitlines() if s])
 
         if debug == 1:
             print "First 50 characters of the text"
@@ -88,7 +89,7 @@ def main(debug=0, separator="_____@@@@@_____"):
                 if debug == 1:
                     print parse_tree
                 ok = subprocess.call(["rm", sentence_path])
-                print('%s%s%d_%d%s%s%s%s' % (line, separator, index, sorted_tag_list[k][2], separator, sen, separator, parse_tree))
+                print('%s%s%d_%d%s%s%s%s' % (line, separator, index, sorted_tag_list[k][2], separator, sen.replace('\n', '_'), separator, parse_tree.replace('\n', ' ')))
             i += 1
 
 if __name__ == "__main__":
