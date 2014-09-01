@@ -29,7 +29,7 @@ def preprocessText(text):
                 i += 1
             i += 1
 
-    return " ".join(content_without_brackets)
+    return " ".join(content_without_brackets).decode("utf-8", "replace")
 
 def main(debug=0):
     for line in sys.stdin:
@@ -82,10 +82,10 @@ def main(debug=0):
                 f.write(preprocessed)
                 f.close()
                 parse_tree = subprocess.Popen(["/home/iuliia.proskurnia/stanford-parser-2012-11-12/lexparser.sh", sentence_path], stdout=subprocess.PIPE)\
-                        .read().decode("utf-8").encode('ascii', 'ignore')
+                        .stdout.read().decode("utf-8").encode('ascii', 'ignore')
                 if debug == 1:
                     print parse_tree
-                subprocess.Popen(["rm", f], stdout=subprocess.PIPE)
+                ok = subprocess.call(["rm", sentence_path])
             i += 1
 
 if __name__ == "__main__":
