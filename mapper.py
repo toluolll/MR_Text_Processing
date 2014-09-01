@@ -31,7 +31,7 @@ def preprocessText(text):
 
     return " ".join(content_without_brackets).decode("utf-8", "replace")
 
-def main(debug=0):
+def main(debug=0, separator="\t@@@@@\t"):
     for line in sys.stdin:
         line = line.strip() # Remove whitespace from beginning and end
         cat = subprocess.Popen(["hadoop", "fs", "-cat", line], stdout=subprocess.PIPE)
@@ -86,6 +86,7 @@ def main(debug=0):
                 if debug == 1:
                     print parse_tree
                 ok = subprocess.call(["rm", sentence_path])
+                print('%s%s%d_%d%s%s%s%s' % (line, separator, index, sorted_tag_list[k][2], separator, sen, separator, parse_tree))
             i += 1
 
 if __name__ == "__main__":
