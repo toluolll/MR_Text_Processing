@@ -3,6 +3,7 @@
 from operator import itemgetter
 import sys
 import time
+import subprocess
 # from _chrefliterals import WordsDict, findLiterals, TextTag, TextTagList, normLiteral
 
 # ABBR_MAX = 4
@@ -49,6 +50,9 @@ import time
 #     return n_literal.decode('utf-8', 'ignore')
 
 def main(debug=0, separator="_____@@@@@_____"):
+    currentArticle = None
+    currentString = ""
+
     for line in sys.stdin:
         line = line.strip()
 
@@ -83,18 +87,23 @@ def main(debug=0, separator="_____@@@@@_____"):
 
         # TODO: extract relations
 
-        subprocess.Popen(["hadoop", "fs", "-put", "-", "".join([article_path,"parse_tree"])], 
-            stdin=line, 
-            stdout=subprocess.PIPE)
+        if currentArticle != article_path:
+            if currentArticle is not None:
+                # subprocess.Popen(["hadoop", "fs", "-put", "-", "".join([article_path,"parse_tree"])], 
+                #                 stdin=currentString, 
+                #                 stdout=subprocess.PIPE)
+                print('%s' % (currentString))
+            currentArticle = article_path
+            currentString = 0
 
-        print('%s%s%s%s%s%s%s' % (
-                    article_path, 
-                    separator, 
-                    sentence, 
-                    separator, 
-                    "concepts", 
-                    separator, 
-                    "relations"))
+        currentString += line + "\n"
+
+    # Output last word group if needed
+    if currentString > 0:
+        # subprocess.Popen(["hadoop", "fs", "-put", "-", "".join([article_path,"parse_tree"])], 
+        #                 stdin=line, 
+        #                 stdout=subprocess.PIPE)
+        print('%s' % (currentString))
 
 if __name__ == "__main__":
     main(debug=1)
