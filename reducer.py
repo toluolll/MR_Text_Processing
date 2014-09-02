@@ -6,6 +6,73 @@ import time
 import subprocess
 import codecs
 from tempfile import NamedTemporaryFile
+
+def main(debug=0, separator="_____@@@@@_____"):
+    currentArticle = None
+    currentString = ""
+
+    for line in sys.stdin:
+        line = line.strip()
+
+        if debug == 1:
+            print "Line to be reduced"
+            print line
+
+        # Get elements of pair created by the mapper
+        article_path, positions, sentence, parse_tree = line.split(separator)
+
+        if debug == 1:
+            print article_path
+            print "Positions"
+            print positions
+            print "Sentence"
+            print sentence
+            print "Parse_tree"
+            print parse_tree
+            time.sleep(5)
+
+        # Convert count to an integer
+        try:
+            pos1, pos2 = positions.split("_")
+            pos1 = int(pos1)
+            pos2 = int(pos2)
+        except ValueError:
+            continue
+
+        if currentArticle != article_path:
+            if currentArticle is not None:
+                with NamedTemporaryFile() as f:
+                    for line in currentString:
+                        f.write(line)
+                    f.flush()
+                    f.seek(0)
+		    out_path = "".join([article_path,"parse_tree"])
+                    put = subprocess.Popen(["hadoop", "fs", "-put", f.name, out_path], stdout=subprocess.PIPE)
+		    put.wait()
+                if debug == 1:
+                    print('%s' % (currentString))
+
+            currentArticle = article_path
+            currentString = ""
+
+        currentString += "".join([line,"\n"])
+
+    # Output last word group if needed
+    if currentString > 0:
+        with NamedTemporaryFile() as f:
+            for line in currentString:
+                f.write(line)
+            f.flush()
+            f.seek(0)
+	    out_path = "".join([article_path,"parse_tree"])
+            put = subprocess.Popen(["hadoop", "fs", "-put", f.name, out_path], stdout=subprocess.PIPE)
+	    put.wait()
+        if debug == 1:
+            print('%s' % (currentString))
+
+if __name__ == "__main__":
+    main(debug=0)
+
 # from _chrefliterals import WordsDict, findLiterals, TextTag, TextTagList, normLiteral
 
 # ABBR_MAX = 4
@@ -51,74 +118,8 @@ from tempfile import NamedTemporaryFile
 #     n_literal = normLiteral(literal, DictWords, stopwords, False)
 #     return n_literal.decode('utf-8', 'ignore')
 
-def main(debug=0, separator="_____@@@@@_____"):
-    currentArticle = None
-    currentString = ""
+# TODO: extract concepts
+# tag_list = get_terms_from_string(article.article_text, temp_literals)
+# tag_tuple_list = [(l.value, l.start, l.end) for l in tag_list]
 
-    for line in sys.stdin:
-        line = line.strip()
-
-        if debug == 1:
-            print "Line to be reduced"
-            print line
-
-        # Get elements of pair created by the mapper
-        article_path, positions, sentence, parse_tree = line.split(separator)
-
-        if debug == 1:
-            print article_path
-            print "Positions"
-            print positions
-            print "Sentence"
-            print sentence
-            print "Parse_tree"
-            print parse_tree
-            time.sleep(5)
-
-        # Convert count to an integer
-        try:
-            pos1, pos2 = positions.split("_")
-            pos1 = int(pos1)
-            pos2 = int(pos2)
-        except ValueError:
-            continue
-
-        # TODO: extract concepts
-        # tag_list = get_terms_from_string(article.article_text, temp_literals)
-        # tag_tuple_list = [(l.value, l.start, l.end) for l in tag_list]
-
-        # TODO: extract relations
-
-        if currentArticle != article_path:
-            if currentArticle is not None:
-                with NamedTemporaryFile() as f:
-                    for line in currentString:
-                        f.write(line)
-                    f.flush()
-                    f.seek(0)
-		    out_path = "".join([article_path,"parse_tree"])
-                    put = subprocess.Popen(["hadoop", "fs", "-put", f.name, out_path], stdout=subprocess.PIPE)
-		    put.wait()
-                if debug == 1:
-                    print('%s' % (currentString))
-
-            currentArticle = article_path
-            currentString = ""
-
-        currentString += "".join([line,"\n"])
-
-    # Output last word group if needed
-    if currentString > 0:
-        with NamedTemporaryFile() as f:
-            for line in currentString:
-                f.write(line)
-            f.flush()
-            f.seek(0)
-	    out_path = "".join([article_path,"parse_tree"])
-            put = subprocess.Popen(["hadoop", "fs", "-put", f.name, out_path], stdout=subprocess.PIPE)
-	    put.wait()
-        if debug == 1:
-            print('%s' % (currentString))
-
-if __name__ == "__main__":
-    main(debug=0)
+# TODO: extract relations
