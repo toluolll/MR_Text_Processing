@@ -4,6 +4,7 @@ import sys, os
 import codecs
 import hashlib
 import time
+from tempfile import NamedTemporaryFile
 
 def detect_sentences(text):
     dot_list = []
@@ -76,19 +77,15 @@ def main(debug=0, separator="_____@@@@@_____"):
                     print preprocessed
                     time.sleep(3)
                 hash_of_the_sentence = hashlib.sha224(sen).hexdigest()
-                sentence_path = "/home/iuliia.proskurnia/hashs/" + hash_of_the_sentence
-                if debug == 1:
-                    print "Path to the sentence for stanford parser"
-                    print sentence_path
-                    time.sleep(2)
-                f = codecs.open(sentence_path, 'w', 'utf-8')
-                f.write(preprocessed)
-                f.close()
-                parse_tree = subprocess.Popen(["/home/iuliia.proskurnia/stanford-parser-2012-11-12/lexparser.sh", sentence_path], stdout=subprocess.PIPE)\
-                        .stdout.read().decode("utf-8").encode('ascii', 'ignore')
+                with NamedTemporaryFile() as f:
+                    f.write(preprocessed)
+                    f.flush()
+                    f.seek(0)
+                    out_path = "".join([article_path,"parse_tree"])
+                    parse_tree = subprocess.Popen(["/home/iuliia.proskurnia/stanford-parser-2012-11-12/lexparser.sh", f.name], stdout=subprocess.PIPE)\
+                            .stdout.read().decode("utf-8").encode('ascii', 'ignore')
                 if debug == 1:
                     print parse_tree
-                ok = subprocess.call(["rm", sentence_path])
                 print('%s%s%d_%d%s%s%s%s' % (line, separator, index, sorted_tag_list[k][2], separator, sen.replace('\n', '_'), separator, parse_tree.replace('\n', ' ')))
             i += 1
 
