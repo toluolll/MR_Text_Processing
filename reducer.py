@@ -121,4 +121,4 @@ def main(debug=0, separator="_____@@@@@_____"):
             print('%s' % (currentString))
 
 if __name__ == "__main__":
-    main(debug=1)
+    main(debug=0)

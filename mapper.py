@@ -63,7 +63,7 @@ def main(debug=0, separator="_____@@@@@_____"):
             print num_elems
 
         i = -1
-        while i < 3:
+        while i < num_elems:
             k = i + 1
             if k < num_elems:
                 index = 0 if i < 0 else sorted_tag_list[i][2] + 1
