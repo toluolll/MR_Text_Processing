@@ -5,6 +5,7 @@ import sys
 import time
 import subprocess
 import codecs
+from tempfile import NamedTemporaryFile
 # from _chrefliterals import WordsDict, findLiterals, TextTag, TextTagList, normLiteral
 
 # ABBR_MAX = 4
@@ -72,7 +73,7 @@ def main(debug=0, separator="_____@@@@@_____"):
             print sentence
             print "Parse_tree"
             print parse_tree
-	        time.sleep(5)
+            time.sleep(5)
 
         # Convert count to an integer
         try:
@@ -90,11 +91,13 @@ def main(debug=0, separator="_____@@@@@_____"):
 
         if currentArticle != article_path:
             if currentArticle is not None:
-                f = codecs.open("".join(["/home/iuliia.proskurnia", article_path, "parse_tree"]), 'w', 'utf-8')
-                f.write(currentString)
-                f.close()
-                subprocess.Popen(["hadoop", "fs", "-put", f, "".join([article_path,"parse_tree"]), 
-                                stdout=subprocess.PIPE)
+                with NamedTemporaryFile() as f:
+                    for line in currentString:
+                        f.write(line)
+                    f.flush()
+                    f.seek(0)
+                    subprocess.Popen(["hadoop", "fs", "-put", f.name, "".join([article_path,"parse_tree"]), 
+                                    stdout=subprocess.PIPE)
                 if debug == 1:
                     print('%s' % (currentString))
 
@@ -105,11 +108,13 @@ def main(debug=0, separator="_____@@@@@_____"):
 
     # Output last word group if needed
     if currentString > 0:
-        f = codecs.open("".join(["/home/iuliia.proskurnia", article_path,"parse_tree"]), 'w', 'utf-8')
-        f.write(currentString)
-        f.close()
-        subprocess.Popen(["hadoop", "fs", "-put", f, "".join([article_path,"parse_tree"]), 
-                        stdout=subprocess.PIPE)
+        with NamedTemporaryFile() as f:
+            for line in currentString:
+                f.write(line)
+            f.flush()
+            f.seek(0)
+            subprocess.Popen(["hadoop", "fs", "-put", f.name, "".join([article_path,"parse_tree"]), 
+                            stdout=subprocess.PIPE)
         if debug == 1:
             print('%s' % (currentString))
 
