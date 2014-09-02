@@ -94,9 +94,9 @@ def main(debug=0, separator="_____@@@@@_____"):
                 #                 stdout=subprocess.PIPE)
                 print('%s' % (currentString))
             currentArticle = article_path
-            currentString = 0
+            currentString = ""
 
-        currentString += line + "\n"
+        currentString += "".join([line,"\n"])
 
     # Output last word group if needed
     if currentString > 0:
