@@ -2,7 +2,6 @@
 import subprocess
 import sys, os
 import codecs
-import hashlib
 import time
 from tempfile import NamedTemporaryFile
 
@@ -76,12 +75,10 @@ def main(debug=0, separator="_____@@@@@_____"):
                     print "Preprocessed sentence"
                     print preprocessed
                     time.sleep(3)
-                hash_of_the_sentence = hashlib.sha224(sen).hexdigest()
                 with NamedTemporaryFile() as f:
                     f.write(preprocessed)
                     f.flush()
                     f.seek(0)
-                    out_path = "".join([article_path,"parse_tree"])
                     parse_tree = subprocess.Popen(["/home/iuliia.proskurnia/stanford-parser-2012-11-12/lexparser.sh", f.name], stdout=subprocess.PIPE)\
                             .stdout.read().decode("utf-8").encode('ascii', 'ignore')
                 if debug == 1:
