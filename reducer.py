@@ -47,7 +47,9 @@ def main(debug=0, separator="_____@@@@@_____"):
                     f.flush()
                     f.seek(0)
                     out_path = "".join([article_path,"parse_tree"])
-                    put = subprocess.Popen(["hadoop", "fs", "-put", f.name, out_path], stdout=subprocess.PIPE)
+		    if not subprocess.Popen(["hadoop", "fs", "-stat", out_path], stderr=subprocess.PIPE).stderr.read():
+			subprocess.Popen(["hadoop", "fs", "-rm", out_path], stdout=subprocess.PIPE).wait()
+		    put = subprocess.Popen(["hadoop", "fs", "-put", f.name, out_path], stdout=subprocess.PIPE)
 		    put.wait()
                 if debug == 1:
                     print('%s' % (currentString))
@@ -65,7 +67,9 @@ def main(debug=0, separator="_____@@@@@_____"):
             f.flush()
             f.seek(0)
             out_path = "".join([currentArticle,"parse_tree"])
-            put = subprocess.Popen(["hadoop", "fs", "-put", f.name, out_path], stdout=subprocess.PIPE)
+	    if not subprocess.Popen(["hadoop", "fs", "-stat", out_path], stderr=subprocess.PIPE).stderr.read():
+		subprocess.Popen(["hadoop", "fs", "-rm", out_path], stdout=subprocess.PIPE).wait()
+	    put = subprocess.Popen(["hadoop", "fs", "-put", f.name, out_path], stdout=subprocess.PIPE)
 	    put.wait()
         if debug == 1:
             print('%s' % (currentString))

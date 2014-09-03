@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 import subprocess
 import sys, os
 import codecs
@@ -75,12 +75,16 @@ def main(debug=0, separator="_____@@@@@_____"):
                     print "Preprocessed sentence"
                     print preprocessed
                     time.sleep(3)
-                with NamedTemporaryFile() as f:
-                    f.write(preprocessed)
-                    f.flush()
-                    f.seek(0)
-                    parse_tree = subprocess.Popen(["/home/iuliia.proskurnia/stanford-parser-2012-11-12/lexparser.sh", f.name], stdout=subprocess.PIPE)\
+                f = NamedTemporaryFile(delete=False)
+		filename = f.name
+                f.close()
+                with codecs.open(filename, 'w', 'utf-8') as fh:
+                    fh.write(preprocessed)
+                    fh.flush()
+                    fh.seek(0)
+                    parse_tree = subprocess.Popen(["/home/iuliia.proskurnia/stanford-parser-2012-11-12/lexparser.sh", fh.name], stdout=subprocess.PIPE)\
                             .stdout.read().decode("utf-8").encode('ascii', 'ignore')
+		os.unlink(filename)
                 if debug == 1:
                     print parse_tree
                 print('%s%s%d_%d%s%s%s%s' % (line, separator, index, sorted_tag_list[k][2], separator, sen.replace('\n', '_'), separator, parse_tree.replace('\n', ' ')))
